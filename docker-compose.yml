@@ -1,0 +1,18 @@
+web:
+  build: .
+  volumes:
+    - .:/usr/src/app
+  links:
+      - db
+  environment:
+    RAILS_ENV: development
+    VIRTUAL_HOST: hello-dkr.docker
+    BUNDLE_PATH: /usr/src/app/.bundle/gems
+    GEM_HOME: /usr/src/app/.bundle/gems
+
+
+db:
+  image: postgres:9.3
+  environment:
+    POSTGRES_PASSWORD: hello-dkr
+    POSTGRES_USER: postgres

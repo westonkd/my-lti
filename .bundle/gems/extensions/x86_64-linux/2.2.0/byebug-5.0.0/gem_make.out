@@ -1,0 +1,21 @@
+/usr/bin/ruby2.2 -r ./siteconf20160819-1-1ezl8t6.rb extconf.rb
+creating Makefile
+
+make "DESTDIR=" clean
+make: Warning: File `Makefile' has modification time 25 s in the future
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+make "DESTDIR="
+make: Warning: File `Makefile' has modification time 25 s in the future
+compiling breakpoint.c
+compiling byebug.c
+compiling context.c
+compiling locker.c
+compiling threads.c
+linking shared-object byebug/byebug.so
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+make "DESTDIR=" install
+make: Warning: File `Makefile' has modification time 24 s in the future
+/usr/bin/install -c -m 0755 byebug.so ./.gem.20160819-1-18jqhjl/byebug
+make: warning:  Clock skew detected.  Your build may be incomplete.

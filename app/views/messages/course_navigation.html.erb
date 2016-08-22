@@ -1,0 +1,16 @@
+<h1>Amaze</h1>
+<h2>The most amazing LTI app</h2>
+<h3><%= @consumer_key %></h3>
+<h3><%= @consumer_secret %></h3>
+<table class="table">
+  <tr>
+    <th>Header</th>
+    <th>Value</th>
+  </tr>
+  <% @params.each do |k, v| %>
+    <tr>
+      <td><%= k %></td>
+      <td><%= v %></td>
+    </tr>
+  <% end %>
+</table>

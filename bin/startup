@@ -1,0 +1,4 @@
+#!/bin/bash
+## boot the app
+echo "Starting web server"
+exec /usr/src/entrypoint

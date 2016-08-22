@@ -1,0 +1,15 @@
+/usr/bin/ruby2.2 -r ./siteconf20160819-1-3yoxvp.rb extconf.rb
+creating Makefile
+
+make "DESTDIR=" clean
+make: Warning: File `Makefile' has modification time 24 s in the future
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+make "DESTDIR="
+make: Warning: File `Makefile' has modification time 24 s in the future
+make: Nothing to be done for `all'.
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+make "DESTDIR=" install
+make: Warning: File `Makefile' has modification time 24 s in the future
+make: warning:  Clock skew detected.  Your build may be incomplete.

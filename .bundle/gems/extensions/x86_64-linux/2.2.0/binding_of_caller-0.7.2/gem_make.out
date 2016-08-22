@@ -1,0 +1,17 @@
+/usr/bin/ruby2.2 -r ./siteconf20160819-1-1wtnpo.rb extconf.rb
+
+make "DESTDIR=" clean
+make: Warning: File `Makefile' has modification time 24 s in the future
+make: *** No rule to make target `clean'.  Stop.
+
+make "DESTDIR="
+make: Warning: File `Makefile' has modification time 24 s in the future
+echo "Nada."
+Nada.
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+make "DESTDIR=" install
+make: Warning: File `Makefile' has modification time 24 s in the future
+echo "Nada."
+Nada.
+make: warning:  Clock skew detected.  Your build may be incomplete.
