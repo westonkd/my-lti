@@ -1,10 +1,13 @@
 class MessagesController < ApplicationController
   skip_before_action :verify_authenticity_token
+  before_action :get_consumer
   before_action :verify_consumer
   after_action :allow_iframe
 
   def course_navigation
     @params = params
+    @secret = @consumer.lti_secret
+    @key = params[:oauth_consumer_key]
   end
 
   def editor_button
@@ -12,7 +15,7 @@ class MessagesController < ApplicationController
       {
         title: "FBTB",
         url: "http://www.fbtb.com",
-        thumb_src: "http://logonoid.com/images/lego-logo.png",
+        thumb_src: "https://farm4.staticflickr.com/3914/14738458940_715ea72e23.jpg",
         description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.'
       },
       {
@@ -24,7 +27,7 @@ class MessagesController < ApplicationController
       {
         title: "The Brothers Brick",
         url: "http://www.brothers-brick.com",
-        thumb_src: "http://logonoid.com/images/lego-logo.png",
+        thumb_src: "https://pbs.twimg.com/profile_images/487076586009530370/SDMujn1J.jpeg",
         description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.'
       }
     ]
@@ -38,36 +41,43 @@ class MessagesController < ApplicationController
     response.headers.except! 'X-Frame-Options'
   end
 
+  def get_consumer
+    @consumer = Consumer.where(:lti_key => params[:oauth_consumer_key]).first
+    reject_request unless @consumer
+  end
+
   def verify_consumer
     if OauthNonce.where(:value => params[:oauth_nonce]).length == 0
       nonce = OauthNonce.create!(value: params[:oauth_nonce])
 
-      if Consumer.where(:lti_key => params[:oauth_consumer_key]).length == 1
-        consumer = Consumer.where(:lti_key => params[:oauth_consumer_key])
-
+      if @consumer
         options = {
           :consumer_key => params[:oauth_consumer_key],
-          :consumer_secret => consumer.first.lti_secret,
+          :consumer_secret => @consumer.lti_secret,
           :nonce => nonce.value,
           :signature_method => params[:oauth_signature_method],
-          :timestamp => params[:oauth_timestamp]
+          :timestamp => params[:oauth_timestamp],
+          :callback => 'about:blank'
         }
 
         header = SimpleOAuth::Header.new(
           :post,
           "#{request.protocol}#{request.host_with_port}#{request.fullpath}",
-          request.POST,
+          request.POST.select{|k, _| !k.downcase.include?('oauth')},
           options
         )
 
         puts "\n===== URL ====="
         puts "#{request.protocol}#{request.host_with_port}#{request.fullpath}"
         puts request.method
+
         puts "\n===== Valid? ====="
         puts header.valid?
 
+        @debug_base = header.send(:signature_base)
+
         puts "\n===== Header ====="
-        puts header
+        puts header.options
 
         puts "\n===== Signed Attributes ====="
         puts header.signed_attributes
