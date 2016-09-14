@@ -1,0 +1,104 @@
+<div class="container">
+  <% @websites.each do |website| %>
+    <div class="row website-row">
+        <div class="col-xs-4">
+          <img src="<%= website[:thumb_src] %>" class="img-thumbnail">
+        </div>
+        <div class="col-xs-8">
+          <a href="#" data-thumb="<%= website[:thumb_src] %>" data-url="<%= website[:url] %>" data-title="<%= website[:title] %>" onclick="selectSite(event)">
+            <h2><%= website[:title] %></h2>
+          </a>
+          <h3><%= website[:url] %></h3>
+          <p>
+            <%= website[:description] %>
+          </p>
+        </div>
+    </div>
+  <% end %>
+</div>
+
+
+<form id="contentItemsForm" action="<%= @content_item_return_url %>" method="post" encType="application/x-www-form-urlencoded">
+  <input type="hidden" name="lti_message_type" value="ContentItemSelection" />
+  <input type="hidden" name="lti_version" value="LTI-1p0" />
+  <input id="contentItemsInput" type="hidden" name="content_items" value="" />
+</form>
+
+
+<script type="text/javascript">
+  let selectedUrl = "";
+  let selectedTitle = "";
+  let selectedThumb = "";
+
+  String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+  };
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  function selectSite(e) {
+    let selectedElement = e.target.parentNode;
+    selectedUrl = selectedElement.getAttribute('data-url');
+    selectedTitle = selectedElement.getAttribute('data-title');
+    selectedThumb = selectedElement.getAttribute('data-thumb');
+
+    var selectedContentItem = {
+      '@context': 'http://purl.imsglobal.org/ctx/lti/v1/ContentItem',
+      '@graph': [
+        {
+          '@type': 'ContentItem',
+          'url': selectedUrl,
+          'mediaType': 'text/html',
+          'title': selectedTitle,
+          'thumbnail': {
+            '@id': selectedThumb,
+            'width': 150,
+            'height': 150,
+          }
+        }
+      ]
+    }
+
+    document.querySelector('input#contentItemsInput').value = JSON.stringify(selectedContentItem);
+    console.log(selectedContentItem);
+    document.querySelector('#contentItemsForm').submit();
+  }
+</script>
+<style type="text/css">
+  .website-row {
+    min-height: 100px;
+    margin-top: 15px;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    border-bottom: solid 1px lightgray;
+    transition: .25s background-color;
+    cursor: pointer;
+  }
+
+  .website-row a {
+    color: black;
+  }
+
+  .website-row, .website-row * {
+    user-select: none !important;
+  }
+
+  .website-row h2, h3 {
+    margin: 0px 0px 5px 0px;
+  }
+
+  .website-row h3 {
+    color: darkgray;
+    font-size: 16px;
+  }
+
+  .website-row .img-thumbnail {
+    max-width: 150px;
+    max-height: 150px;
+  }
+</style>

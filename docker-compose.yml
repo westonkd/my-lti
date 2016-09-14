@@ -6,7 +6,7 @@ web:
       - db
   environment:
     RAILS_ENV: development
-    VIRTUAL_HOST: hello-dkr.docker
+    VIRTUAL_HOST: my-lti.docker
     BUNDLE_PATH: /usr/src/app/.bundle/gems
     GEM_HOME: /usr/src/app/.bundle/gems
 
