@@ -51,8 +51,10 @@ class MessagesController < ApplicationController
       nonce = OauthNonce.create!(value: params[:oauth_nonce])
 
       if @consumer
+        @message = IMS::LTI::Models::Messages::Message.generate(request.request_parameters)
+
         options = {
-          :consumer_key => params[:oauth_consumer_key],
+          :consumer_key => @message.oauth_consumer_key,
           :consumer_secret => @consumer.lti_secret,
           :nonce => nonce.value,
           :signature_method => params[:oauth_signature_method],
@@ -62,32 +64,20 @@ class MessagesController < ApplicationController
 
         header = SimpleOAuth::Header.new(
           :post,
-          "#{request.protocol}#{request.host_with_port}#{request.fullpath}",
-          request.POST.select{|k, _| !k.downcase.include?('oauth')},
+          request.url,
+          @message.post_params,
           options
         )
 
-        puts "\n===== URL ====="
-        puts "#{request.protocol}#{request.host_with_port}#{request.fullpath}"
-        puts request.method
-
-        puts "\n===== Valid? ====="
-        puts header.valid?
-
         @debug_base = header.send(:signature_base)
 
-        puts "\n===== Header ====="
-        puts header.options
-
-        puts "\n===== Signed Attributes ====="
-        puts header.signed_attributes
+        reject_request unless header.signed_attributes[:oauth_signature] == params.to_hash['oauth_signature']
       end
 
     end
   end
 
   def reject_request
-    #do a 403 here
-    puts "INVALID!"
+    render status: 403
   end
 end
